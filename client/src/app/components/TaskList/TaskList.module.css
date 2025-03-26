@@ -1,0 +1,33 @@
+.taskListContainer {
+  position: absolute;
+  left: 500px;
+  top: 30px;
+}
+
+.searchInput {
+  margin: 10px;
+  position: relative;
+}
+
+.clearInputButton {
+  position: absolute;
+  margin-left: -32px;
+  margin-top: 12px;
+  width: 20px;
+  height: 16px;
+  font-size: 10px;
+}
+
+.todoItemContainer {
+  border: 1px solid #ccc;
+  width: 490px;
+  padding: 10px;
+  margin-bottom: 10px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.checkboxAndName {
+  display: flex;
+  gap: 30px;
+}

@@ -1,0 +1,24 @@
+.categoryContainer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: 1px solid #ccc;
+  width: 300px;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+.categoryContainer span {
+  cursor: pointer;
+  margin-right: 5px;
+}
+
+.categorContainer svg {
+  margin-left: 5px;
+}
+
+.subCategoryContainer {
+  display: flex;
+  justify-content: space-between;
+  margin-left: 15px;
+}

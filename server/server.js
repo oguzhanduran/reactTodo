@@ -7,9 +7,9 @@ app.use(cors());
 
 
 // creating api route
-app.get("/api/home", (req, res) => {
-    res.json({ message: "Hello World!", people: ["oguzhan", "hasan", "kaan"] });
-})
+app.get("/api/todos", (req, res) => {
+  res.json({ message: "Hello World!", people: ["oguzhan", "hasan", "kaan"] });
+});
 
 // To run application
 app.listen(PORT, () => {
