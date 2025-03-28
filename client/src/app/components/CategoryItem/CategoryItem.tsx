@@ -2,23 +2,26 @@ import React from "react";
 import TaskList from "../TaskList/TaskList";
 import { FaRegTrashAlt, FaRegEdit, FaRegPlusSquare } from "react-icons/fa";
 import styles from "./CategoryItem.module.css";
+import { Category } from "@/types/categoryTypes";
 
-const TrashIcon: React.FC = FaRegTrashAlt as unknown as React.FC;
-const EditIcon: React.FC = FaRegEdit as unknown as React.FC;
-const PlusIcon: React.FC = FaRegPlusSquare as unknown as React.FC;
+type CategoryItemProps = {
+  category: Category;
+};
 
-const CategoryItem = () => {
+const CategoryItem: React.FC<CategoryItemProps> = ({category}) => {
+ console.log('category', category?.name)
+
   return (
     <div>
       <div className={styles.categoryContainer}>
         <div>
           <span>⯈</span>
-          <span>Category</span>
-          <EditIcon />
+          <span>{category.name}</span>
+          <FaRegEdit />
         </div>
         <div className={styles.iconContainer}>
-          <TrashIcon />
-          <PlusIcon />
+          <FaRegTrashAlt />
+          <FaRegPlusSquare />
         </div>
       </div>
       <TaskList />
