@@ -23,9 +23,13 @@ export const categorySlice = createSlice({
       state.subCategories = action.payload.subCategories;
       console.log("subStorageKey", action.payload.subStorageKey);
     },
+    setTodos: (state, action) => {
+      state.todos = action.payload.todos;
+    },
   },
 });
 
-export const { setCategories, setSubCategories } = categorySlice.actions;
+export const { setCategories, setSubCategories, setTodos } =
+  categorySlice.actions;
 
 export default categorySlice.reducer;
