@@ -4,7 +4,7 @@ import styles from "./TaskList.module.css";
 
 const EditIcon: React.FC = FaRegEdit as unknown as React.FC;
 
-const TaskList = () => {
+const TaskList = ({ currentCategoryId }) => {
   return (
     <div className={styles.taskListContainer}>
       <input type="checkbox" />

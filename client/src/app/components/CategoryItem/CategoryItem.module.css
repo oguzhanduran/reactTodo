@@ -22,3 +22,9 @@
   justify-content: space-between;
   margin-left: 15px;
 }
+
+.subCategoryContainer {
+  display: flex;
+  justify-content: space-between;
+  margin-left: 15px;
+}
