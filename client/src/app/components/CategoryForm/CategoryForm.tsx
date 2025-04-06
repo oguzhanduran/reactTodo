@@ -1,11 +1,11 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import CategoryItem from "../CategoryItem/CategoryItem";
 import styles from "./CategoryForm.module.css";
 import { v4 as uuidv4 } from "uuid";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/store/store";
-import { categorySlice, setCategories } from "@/store/slices/categorySlice";
+import { setCategories, fetchCategories } from "@/store/slices/categorySlice";
 import { Category, OpenCategories } from "@/types/categoryTypes";
 
 const CategoryForm = () => {
@@ -19,6 +19,10 @@ const CategoryForm = () => {
   ) as Category[];
 
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(fetchCategories());
+  }, [dispatch]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setCategoryInput(e.target.value);

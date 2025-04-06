@@ -7,14 +7,18 @@ import { OpenCategories } from "@/types/categoryTypes";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "@/store/store";
 import { v4 as uuidv4 } from "uuid";
-import { setSubCategories } from "@/store/slices/categorySlice";
+import {
+  setSubCategories,
+  fetchSubCategories,
+  fetchTodos,
+} from "@/store/slices/categorySlice";
 
 type CategoryItemProps = {
   category: Category;
   onDelete: () => void;
   onUpdate: () => void;
-  onToggle?: () => void;
-  openCategories?: OpenCategories;
+  onToggle: () => void;
+  openCategories: OpenCategories;
   currentCategoryId: string | null;
   setCurrentCategoryId: (id: string) => void;
 };
@@ -37,8 +41,12 @@ const CategoryItem: React.FC<CategoryItemProps> = ({
   ) as SubCategory[];
   const dispatch = useDispatch();
 
-  const handleToggle = () => {
-    onToggle?.();
+  const handleToggle = (categoryId: string) => {
+    onToggle();
+    if (!openCategories[categoryId]) {
+      const subCategoryId = `subCategories-${category.id}`;
+      dispatch(fetchSubCategories({ subCategoryId: subCategoryId }));
+    }
   };
 
   const addSubCategoryItem = () => {
@@ -58,7 +66,7 @@ const CategoryItem: React.FC<CategoryItemProps> = ({
       })
     );
     setSubCategoryVersion(subCategoryVersion + 0.1);
-    (openCategories ?? {})[category.id] = true;
+    openCategories[category.id] = true;
   };
 
   const deleteSubCategoryItem = (id: string) => {
@@ -105,14 +113,16 @@ const CategoryItem: React.FC<CategoryItemProps> = ({
 
   const openTaskList = () => {
     setCurrentCategoryId(category.id);
+    const storageKey = `todos_${category.id}`;
+    dispatch(fetchTodos(storageKey));
   };
 
   return (
     <div>
       <div className={styles.categoryContainer}>
         <div>
-          <span onClick={() => handleToggle()}>
-            {(openCategories ?? {})[category.id] ? "⯆" : "⯈"}
+          <span onClick={() => handleToggle(category.id)}>
+            {openCategories[category.id] ? "⯆" : "⯈"}
           </span>
           <span onClick={openTaskList}>{category.name}</span>
           <FaRegEdit onClick={onUpdate} />
@@ -125,7 +135,7 @@ const CategoryItem: React.FC<CategoryItemProps> = ({
       {category.id === currentCategoryId && (
         <TaskList currentCategoryId={currentCategoryId} />
       )}
-      {(openCategories ?? {})[category.id] && (
+      {openCategories[category.id] && (
         <div>
           {subCategories
             .filter((subCategory) => subCategory.parentId === category.id)

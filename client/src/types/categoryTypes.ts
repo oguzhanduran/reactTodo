@@ -22,6 +22,11 @@ export type SubCategoriesState = {
   subStorageKey: string;
 };
 
+export type TodosState = {
+  todos: Todo[];
+  storageKey: string;
+};
+
 export type CategoryState = {
   categories: Category[];
   subCategories: SubCategory[];

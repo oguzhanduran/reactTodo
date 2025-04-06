@@ -4,6 +4,7 @@ import {
   CategoryState,
   Category,
   SubCategoriesState,
+  TodosState,
 } from "@/types/categoryTypes";
 
 const initialState: CategoryState = {
@@ -18,18 +19,60 @@ export const categorySlice = createSlice({
   reducers: {
     setCategories: (state, action: PayloadAction<Category[]>) => {
       state.categories = action.payload;
+      localStorage.setItem("categories", JSON.stringify(state.categories));
     },
     setSubCategories: (state, action: PayloadAction<SubCategoriesState>) => {
       state.subCategories = action.payload.subCategories;
-      console.log("subStorageKey", action.payload.subStorageKey);
+      localStorage.setItem(
+        action.payload.subStorageKey,
+        JSON.stringify(state.subCategories)
+      );
     },
-    setTodos: (state, action) => {
+    setTodos: (state, action: PayloadAction<TodosState>) => {
       state.todos = action.payload.todos;
+      localStorage.setItem(
+        action.payload.storageKey,
+        JSON.stringify(state.todos)
+      );
+    },
+
+    fetchTodos: (state, action) => {
+      const storageKey = action.payload;
+      const storedTodos = localStorage.getItem(storageKey);
+      state.todos = storedTodos ? JSON.parse(storedTodos) : [];
+    },
+
+    fetchCategories: (state) => {
+      const storedCategories = localStorage.getItem("categories")
+        ? JSON.parse(localStorage.getItem("categories") as string)
+        : null;
+
+      if (storedCategories && storedCategories.length !== 0) {
+        state.categories = storedCategories;
+      }
+    },
+    fetchSubCategories: (state, action) => {
+      const storedSubCategories = localStorage.getItem(
+        action.payload.subCategoryId
+      )
+        ? JSON.parse(
+            localStorage.getItem(action.payload.subCategoryId) as string
+          )
+        : null;
+      if (storedSubCategories && storedSubCategories.length !== 0) {
+        state.subCategories = storedSubCategories;
+      }
     },
   },
 });
 
-export const { setCategories, setSubCategories, setTodos } =
-  categorySlice.actions;
+export const {
+  setCategories,
+  setSubCategories,
+  setTodos,
+  fetchTodos,
+  fetchCategories,
+  fetchSubCategories,
+} = categorySlice.actions;
 
 export default categorySlice.reducer;
