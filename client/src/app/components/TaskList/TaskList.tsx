@@ -42,15 +42,17 @@ const TaskList: React.FC<TaskListProp> = ({ currentCategoryId }) => {
     setTextInputValue("");
   };
 
+  const askForNewName = (oldName: string): string | null => {
+    const input = prompt("Enter the new todo name", oldName);
+    if (!input || input.trim() === "") return null;
+    return input.trim();
+  };
+
   const updateTodoItem = (id: string) => {
     const updatedTodoItem = todos.map((todoItem) => {
       if (todoItem.id === id) {
-        const updatedItem = prompt("Enter a new todo name", todoItem.name);
-        const newName =
-          updatedItem !== null && updatedItem.trim() !== ""
-            ? updatedItem
-            : todoItem.name;
-
+        const newName = askForNewName(todoItem.name);
+        if (!newName) return todoItem;
         return { ...todoItem, name: newName };
       }
       return todoItem;

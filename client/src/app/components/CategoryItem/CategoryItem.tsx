@@ -80,25 +80,26 @@ const CategoryItem: React.FC<CategoryItemProps> = ({
     dispatch(setSubCategories(categoryObject));
   };
 
+  const askForNewName = (oldName: string): string | null => {
+    const input = prompt("Enter the new subCategory name", oldName);
+    if (!input || input.trim() === "") return null;
+    return input.trim();
+  };
+
   const updateSubCategoryItem = (id: string) => {
-    const updatedSubCategoryItems = subCategories.map((subCategoryItem) => {
-      if (subCategoryItem.id === id) {
-        const updatedItem = prompt(
-          "Enter the new subCategory name",
-          subCategoryItem.name
-        );
-        const newName =
-          updatedItem !== null && updatedItem.trim() !== ""
-            ? updatedItem
-            : subCategoryItem.name;
-        return { ...subCategoryItem, name: newName };
-      }
-      return { ...subCategoryItem };
-    });
+    const subCategory = subCategories.find((item) => item.id === id);
+    if (!subCategory) return;
+
+    const newName = askForNewName(subCategory.name);
+    if (!newName) return;
+
+    const updated = subCategories.map((item) =>
+      item.id === id ? { ...item, name: newName } : item
+    );
 
     dispatch(
       setSubCategories({
-        subCategories: updatedSubCategoryItems,
+        subCategories: updated,
         subStorageKey: `subCategories-${category.id}`,
       })
     );

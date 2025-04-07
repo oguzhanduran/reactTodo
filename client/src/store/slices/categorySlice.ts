@@ -36,7 +36,7 @@ export const categorySlice = createSlice({
       );
     },
 
-    fetchTodos: (state, action) => {
+    fetchTodos: (state, action: PayloadAction<string>) => {
       const storageKey = action.payload;
       const storedTodos = localStorage.getItem(storageKey);
       state.todos = storedTodos ? JSON.parse(storedTodos) : [];
@@ -51,13 +51,14 @@ export const categorySlice = createSlice({
         state.categories = storedCategories;
       }
     },
-    fetchSubCategories: (state, action) => {
-      const storedSubCategories = localStorage.getItem(
-        action.payload.subCategoryId
-      )
-        ? JSON.parse(
-            localStorage.getItem(action.payload.subCategoryId) as string
-          )
+    fetchSubCategories: (
+      state,
+      action: PayloadAction<{ subCategoryId: string }>
+    ) => {
+      const { subCategoryId } = action.payload;
+
+      const storedSubCategories = localStorage.getItem(subCategoryId)
+        ? JSON.parse(localStorage.getItem(subCategoryId) as string)
         : null;
       if (storedSubCategories && storedSubCategories.length !== 0) {
         state.subCategories = storedSubCategories;

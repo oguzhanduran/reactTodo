@@ -29,14 +29,17 @@ const CategoryForm = () => {
   };
 
   const addCategoryItem = () => {
-    if (categoryInput.trim() !== "") {
-      const updatedCategories = [
-        ...categories,
-        { name: categoryInput, id: uuidv4(), openCategories: false },
-      ];
-      dispatch(setCategories(updatedCategories));
-      setCategoryInput("");
-    }
+    if (categoryInput.trim() === "") return;
+
+    const newCategory: Category = {
+      id: uuidv4(),
+      name: categoryInput,
+      openCategories: false,
+    };
+
+    const updated = [...categories, newCategory];
+    dispatch(setCategories(updated));
+    setCategoryInput("");
   };
 
   const deleteCategoryItem = (id: string) => {
@@ -46,22 +49,24 @@ const CategoryForm = () => {
     dispatch(setCategories(updatedCategories));
   };
 
+  const askForNewName = (oldName: string): string | null => {
+    const input = prompt("Enter the new category name", oldName);
+    if (!input || input.trim() === "") return null;
+    return input.trim();
+  };
+
   const updateCategoryItem = (id: string) => {
-    const updatedCategoryItem = categories.map((categoryItem) => {
-      if (categoryItem.id === id) {
-        const updatedItem = prompt(
-          "Enter the new category name",
-          categoryItem.name
-        );
-        const newName =
-          updatedItem?.trim() !== "" && updatedItem !== null
-            ? updatedItem
-            : categoryItem.name;
-        return { ...categoryItem, name: newName };
-      }
-      return categoryItem;
-    });
-    dispatch(setCategories(updatedCategoryItem));
+    const categoryToUpdate = categories.find((cat) => cat.id === id);
+    if (!categoryToUpdate) return;
+
+    const newName = askForNewName(categoryToUpdate.name);
+    if (!newName) return;
+
+    const updated = categories.map((cat) =>
+      cat.id === id ? { ...cat, name: newName } : cat
+    );
+
+    dispatch(setCategories(updated));
   };
 
   const toggleCategoryItem = (id: string) => {
