@@ -5,12 +5,12 @@ import styles from "./CategoryItem.module.css";
 import { Category, SubCategory } from "@/types/categoryTypes";
 import { OpenCategories } from "@/types/categoryTypes";
 import { useSelector, useDispatch } from "react-redux";
-import { RootState } from "@/store/store";
+import { AppDispatch, RootState } from "@/store/store";
 import { v4 as uuidv4 } from "uuid";
 import {
   setSubCategories,
-  fetchSubCategories,
-  fetchTodos,
+  setSubCategoriesFromStorage,
+  fetchTodosAsync,
 } from "@/store/slices/categorySlice";
 
 type CategoryItemProps = {
@@ -39,13 +39,13 @@ const CategoryItem: React.FC<CategoryItemProps> = ({
   const subCategories = useSelector(
     (state: RootState) => state.category.subCategories
   ) as SubCategory[];
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
 
   const handleToggle = (categoryId: string) => {
     onToggle();
     if (!openCategories[categoryId]) {
       const subCategoryId = `subCategories-${category.id}`;
-      dispatch(fetchSubCategories({ subCategoryId: subCategoryId }));
+      dispatch(setSubCategoriesFromStorage({ subCategoryId: subCategoryId }));
     }
   };
 
@@ -115,7 +115,7 @@ const CategoryItem: React.FC<CategoryItemProps> = ({
   const openTaskList = () => {
     setCurrentCategoryId(category.id);
     const storageKey = `todos_${category.id}`;
-    dispatch(fetchTodos(storageKey));
+    dispatch(fetchTodosAsync(storageKey));
   };
 
   return (

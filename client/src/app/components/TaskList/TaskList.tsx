@@ -3,8 +3,8 @@ import { FaRegEdit } from "react-icons/fa";
 import styles from "./TaskList.module.css";
 import { useDispatch, useSelector } from "react-redux";
 import { v4 as uuidv4 } from "uuid";
-import { RootState } from "@/store/store";
-import { setTodos } from "@/store/slices/categorySlice";
+import { AppDispatch, RootState } from "@/store/store";
+import { setTodosAsync } from "@/store/slices/categorySlice";
 import { Todo } from "@/types/categoryTypes";
 
 type TaskListProp = {
@@ -15,8 +15,8 @@ const TaskList: React.FC<TaskListProp> = ({ currentCategoryId }) => {
   const [textInputValue, setTextInputValue] = useState<string>("");
   const [searchInputValue, setSearchInputValue] = useState<string>("");
   const [showDone, setShowDone] = useState<boolean>(false);
+  const dispatch = useDispatch<AppDispatch>();
   const todos = useSelector((state: RootState) => state.category.todos);
-  const dispatch = useDispatch();
 
   const handleChangeTextInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     setTextInputValue(e.target.value);
@@ -33,7 +33,7 @@ const TaskList: React.FC<TaskListProp> = ({ currentCategoryId }) => {
         { name: textInputValue, id: uuidv4(), completed: false },
       ];
       dispatch(
-        setTodos({
+        setTodosAsync({
           todos: updatedTodos,
           storageKey: `todos_${currentCategoryId}`,
         })
@@ -59,7 +59,7 @@ const TaskList: React.FC<TaskListProp> = ({ currentCategoryId }) => {
     });
 
     dispatch(
-      setTodos({
+      setTodosAsync({
         todos: updatedTodoItem,
         storageKey: `todos_${currentCategoryId}`,
       })
@@ -71,7 +71,10 @@ const TaskList: React.FC<TaskListProp> = ({ currentCategoryId }) => {
       todo.id === id ? { ...todo, completed: !todo.completed } : todo
     );
     dispatch(
-      setTodos({ todos: toggleTodos, storageKey: `todos_${currentCategoryId}` })
+      setTodosAsync({
+        todos: toggleTodos,
+        storageKey: `todos_${currentCategoryId}`,
+      })
     );
   };
 

@@ -5,7 +5,10 @@ import styles from "./CategoryForm.module.css";
 import { v4 as uuidv4 } from "uuid";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/store/store";
-import { setCategories, fetchCategories } from "@/store/slices/categorySlice";
+import {
+  setCategories,
+  setCategoriesFromStorage,
+} from "@/store/slices/categorySlice";
 import { Category, OpenCategories } from "@/types/categoryTypes";
 
 const CategoryForm = () => {
@@ -21,7 +24,7 @@ const CategoryForm = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(fetchCategories());
+    dispatch(setCategoriesFromStorage());
   }, [dispatch]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {

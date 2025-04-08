@@ -1,17 +1,44 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import {
   CategoryState,
   Category,
   SubCategoriesState,
-  TodosState,
+  Todo,
 } from "@/types/categoryTypes";
+import axios from "axios";
 
 const initialState: CategoryState = {
   categories: [],
   subCategories: [],
   todos: [],
 };
+
+export const fetchTodosAsync = createAsyncThunk(
+  "todos/fetchTodosAsync",
+  async (storageKey: string) => {
+    const response = await axios.get(
+      `http://localhost:8080/api/todos?storageKey=${storageKey}`
+    );
+    return response.data;
+  }
+);
+
+export const setTodosAsync = createAsyncThunk(
+  "todos/setTodosAsync",
+  async ({ todos, storageKey }: { todos: Todo[]; storageKey: string }) => {
+    await axios.post(`http://localhost:8080/api/todos`, { todos, storageKey });
+    return todos;
+  }
+);
+
+export const updateTodosAsync = createAsyncThunk(
+  "todos/updateTodosAsync",
+  async ({ todos, storageKey }: { todos: Todo[]; storageKey: string }) => {
+    await axios.put(`http://localhost:8080/api/todos`, { todos, storageKey });
+    return todos;
+  }
+);
 
 export const categorySlice = createSlice({
   name: "categoryStore",
@@ -28,21 +55,7 @@ export const categorySlice = createSlice({
         JSON.stringify(state.subCategories)
       );
     },
-    setTodos: (state, action: PayloadAction<TodosState>) => {
-      state.todos = action.payload.todos;
-      localStorage.setItem(
-        action.payload.storageKey,
-        JSON.stringify(state.todos)
-      );
-    },
-
-    fetchTodos: (state, action: PayloadAction<string>) => {
-      const storageKey = action.payload;
-      const storedTodos = localStorage.getItem(storageKey);
-      state.todos = storedTodos ? JSON.parse(storedTodos) : [];
-    },
-
-    fetchCategories: (state) => {
+    setCategoriesFromStorage: (state) => {
       const storedCategories = localStorage.getItem("categories")
         ? JSON.parse(localStorage.getItem("categories") as string)
         : null;
@@ -51,7 +64,7 @@ export const categorySlice = createSlice({
         state.categories = storedCategories;
       }
     },
-    fetchSubCategories: (
+    setSubCategoriesFromStorage: (
       state,
       action: PayloadAction<{ subCategoryId: string }>
     ) => {
@@ -65,15 +78,26 @@ export const categorySlice = createSlice({
       }
     },
   },
+  extraReducers: (builder) => {
+    builder.addCase(fetchTodosAsync.fulfilled, (state, action) => {
+      state.todos = action.payload;
+    });
+
+    builder.addCase(setTodosAsync.fulfilled, (state, action) => {
+      state.todos = action.payload;
+    });
+
+    builder.addCase(updateTodosAsync.fulfilled, (state, action) => {
+      state.todos = action.payload;
+    });
+  },
 });
 
 export const {
   setCategories,
   setSubCategories,
-  setTodos,
-  fetchTodos,
-  fetchCategories,
-  fetchSubCategories,
+  setCategoriesFromStorage,
+  setSubCategoriesFromStorage,
 } = categorySlice.actions;
 
 export default categorySlice.reducer;
