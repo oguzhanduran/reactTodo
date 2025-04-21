@@ -13,6 +13,7 @@ import {
 } from "@/store/slices/categorySlice";
 
 import { fetchTodosAsync } from "@/store/services";
+import Modal from "../Modal/Modal";
 
 type CategoryItemProps = {
   category: Category;
@@ -33,16 +34,42 @@ const CategoryItem: React.FC<CategoryItemProps> = ({
   currentCategoryId,
   setCurrentCategoryId,
 }) => {
-  const [subCategoryVersion, setSubCategoryVersion] = useState<number>(1);
   const [openSubCategories, setOpenSubCategories] = useState<OpenCategories>(
     {}
   );
-  const [isEditing, setIsEditing] = useState(false);
-  const [newName, setNewName] = useState(category.name);
+  const [isEditing, setIsEditing] = useState<boolean>(false);
+  const [newName, setNewName] = useState<string>(category.name);
+  const [isSubCategoryModalOpen, setIsSubCategoryModalOpen] = useState(false);
+
   const subCategories = useSelector(
     (state: RootState) => state.category.subCategories
   ) as SubCategory[];
   const dispatch = useDispatch<AppDispatch>();
+
+  const openSubCategoryModal = () => {
+    setIsSubCategoryModalOpen(true);
+  };
+
+  const handleSaveNewSubCategory = (name: string) => {
+    const newSubCategory = {
+      name,
+      id: `${category.id}-sub-${uuidv4()}`,
+      parentId: category.id,
+      openCategories: true,
+    };
+
+    const updatedSubCategories = [...subCategories, newSubCategory];
+
+    dispatch(
+      setSubCategories({
+        subCategories: updatedSubCategories,
+        subStorageKey: `subCategories-${category.id}`,
+      })
+    );
+
+    openCategories[category.id] = true;
+    setIsSubCategoryModalOpen(false);
+  };
 
   const handleToggle = (categoryId: string) => {
     onToggle();
@@ -61,26 +88,6 @@ const CategoryItem: React.FC<CategoryItemProps> = ({
   const handleCancel = () => {
     setNewName(category.name);
     setIsEditing(false);
-  };
-
-  const addSubCategoryItem = () => {
-    const newSubCategory = {
-      name: `${category.name} ${subCategoryVersion.toFixed(0)}`,
-      id: `${category.id}-sub-${uuidv4()}`,
-      parentId: category.id,
-      openCategories: true,
-    };
-
-    const updatedSubCategories = [...subCategories, newSubCategory];
-
-    dispatch(
-      setSubCategories({
-        subCategories: updatedSubCategories,
-        subStorageKey: `subCategories-${category.id}`,
-      })
-    );
-    setSubCategoryVersion(subCategoryVersion + 1);
-    openCategories[category.id] = true;
   };
 
   const deleteSubCategoryItem = (id: string) => {
@@ -157,7 +164,7 @@ const CategoryItem: React.FC<CategoryItemProps> = ({
         {!isEditing && (
           <div className={styles.iconContainer}>
             <FaRegTrashAlt onClick={onDelete} />
-            <FaRegPlusSquare onClick={() => addSubCategoryItem()} />
+            <FaRegPlusSquare onClick={openSubCategoryModal} />
           </div>
         )}
       </div>
@@ -185,6 +192,13 @@ const CategoryItem: React.FC<CategoryItemProps> = ({
             ))}
         </div>
       )}
+      <Modal
+        isOpen={isSubCategoryModalOpen}
+        onClose={() => setIsSubCategoryModalOpen(false)}
+        onSave={handleSaveNewSubCategory}
+        title="Add New SubCategory"
+        placeholder="Enter SubCategory Name"
+      />
     </div>
   );
 };
