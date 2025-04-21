@@ -9,9 +9,10 @@ import { AppDispatch, RootState } from "@/store/store";
 import { v4 as uuidv4 } from "uuid";
 import {
   setSubCategories,
-  setSubCategoriesFromStorage,
-  fetchTodosAsync,
+  loadSubCategoriesFromStorage,
 } from "@/store/slices/categorySlice";
+
+import { fetchTodosAsync } from "@/store/services";
 
 type CategoryItemProps = {
   category: Category;
@@ -45,7 +46,7 @@ const CategoryItem: React.FC<CategoryItemProps> = ({
     onToggle();
     if (!openCategories[categoryId]) {
       const subCategoryId = `subCategories-${category.id}`;
-      dispatch(setSubCategoriesFromStorage({ subCategoryId: subCategoryId }));
+      dispatch(loadSubCategoriesFromStorage({ subCategoryId: subCategoryId }));
     }
   };
 

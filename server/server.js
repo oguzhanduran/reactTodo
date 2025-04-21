@@ -7,7 +7,14 @@ const { v4: uuidv4 } = require("uuid");
 app.use(cors());
 app.use(express.json()); // middleware to parse JSON body
 
-let todosByCategory = {};
+// Example structure of todosByCategory
+let todosByCategory = {
+  category_1: [
+    { id: uuidv4(), name: "firstTodo", completed: false },
+    { id: uuidv4(), name: "secondTodo", completed: false },
+  ],
+  category_2: [{ id: uuidv4(), name: "thirdTodo", completed: false }],
+};
 
 app.get("/api/todos", (req, res) => {
   const { storageKey } = req.query;
@@ -22,11 +29,15 @@ app.post("/api/todos", (req, res) => {
   return res.send(todos);
 });
 
-app.put("/api/todos", (req, res) => {
+app.patch("/api/todos", (req, res) => {
   const { storageKey, todos } = req.body;
-  todosByCategory[storageKey] = todos;
+  const currentTodos = todosByCategory[storageKey] || [];
+  const updatedTodos = currentTodos.map(
+    (todo) => todos.find((updatedTodo) => updatedTodo.id === todo.id) || todo
+  );
 
-  return res.send(todos);
+  todosByCategory[storageKey] = updatedTodos;
+  return res.send(updatedTodos);
 });
 
 // To run application

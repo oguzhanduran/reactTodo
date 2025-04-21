@@ -7,7 +7,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 import {
   setCategories,
-  setCategoriesFromStorage,
+  loadCategoriesFromStorage,
 } from "@/store/slices/categorySlice";
 import { Category, OpenCategories } from "@/types/categoryTypes";
 
@@ -24,7 +24,7 @@ const CategoryForm = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(setCategoriesFromStorage());
+    dispatch(loadCategoriesFromStorage());
   }, [dispatch]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {

@@ -36,3 +36,8 @@ export type CategoryState = {
 export type OpenCategories = {
   [key: string]: boolean;
 };
+
+export type TodoParams = {
+  todos: Todo[];
+  storageKey: string;
+};

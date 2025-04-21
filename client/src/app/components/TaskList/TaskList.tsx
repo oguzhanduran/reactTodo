@@ -4,8 +4,8 @@ import styles from "./TaskList.module.css";
 import { useDispatch, useSelector } from "react-redux";
 import { v4 as uuidv4 } from "uuid";
 import { AppDispatch, RootState } from "@/store/store";
-import { setTodosAsync } from "@/store/slices/categorySlice";
 import { Todo } from "@/types/categoryTypes";
+import { setTodosAsync, updateTodosAsync } from "@/store/services";
 
 type TaskListProp = {
   currentCategoryId: string;
@@ -59,7 +59,7 @@ const TaskList: React.FC<TaskListProp> = ({ currentCategoryId }) => {
     });
 
     dispatch(
-      setTodosAsync({
+      updateTodosAsync({
         todos: updatedTodoItem,
         storageKey: `todos_${currentCategoryId}`,
       })
@@ -71,7 +71,7 @@ const TaskList: React.FC<TaskListProp> = ({ currentCategoryId }) => {
       todo.id === id ? { ...todo, completed: !todo.completed } : todo
     );
     dispatch(
-      setTodosAsync({
+      updateTodosAsync({
         todos: toggleTodos,
         storageKey: `todos_${currentCategoryId}`,
       })

@@ -4,41 +4,14 @@ import {
   CategoryState,
   Category,
   SubCategoriesState,
-  Todo,
 } from "@/types/categoryTypes";
-import axios from "axios";
+import { fetchTodosAsync, setTodosAsync, updateTodosAsync } from "../services";
 
 const initialState: CategoryState = {
   categories: [],
   subCategories: [],
   todos: [],
 };
-
-export const fetchTodosAsync = createAsyncThunk(
-  "todos/fetchTodosAsync",
-  async (storageKey: string) => {
-    const response = await axios.get(
-      `http://localhost:8080/api/todos?storageKey=${storageKey}`
-    );
-    return response.data;
-  }
-);
-
-export const setTodosAsync = createAsyncThunk(
-  "todos/setTodosAsync",
-  async ({ todos, storageKey }: { todos: Todo[]; storageKey: string }) => {
-    await axios.post(`http://localhost:8080/api/todos`, { todos, storageKey });
-    return todos;
-  }
-);
-
-export const updateTodosAsync = createAsyncThunk(
-  "todos/updateTodosAsync",
-  async ({ todos, storageKey }: { todos: Todo[]; storageKey: string }) => {
-    await axios.put(`http://localhost:8080/api/todos`, { todos, storageKey });
-    return todos;
-  }
-);
 
 export const categorySlice = createSlice({
   name: "categoryStore",
@@ -55,7 +28,7 @@ export const categorySlice = createSlice({
         JSON.stringify(state.subCategories)
       );
     },
-    setCategoriesFromStorage: (state) => {
+    loadCategoriesFromStorage: (state) => {
       const storedCategories = localStorage.getItem("categories")
         ? JSON.parse(localStorage.getItem("categories") as string)
         : null;
@@ -64,7 +37,7 @@ export const categorySlice = createSlice({
         state.categories = storedCategories;
       }
     },
-    setSubCategoriesFromStorage: (
+    loadSubCategoriesFromStorage: (
       state,
       action: PayloadAction<{ subCategoryId: string }>
     ) => {
@@ -96,8 +69,8 @@ export const categorySlice = createSlice({
 export const {
   setCategories,
   setSubCategories,
-  setCategoriesFromStorage,
-  setSubCategoriesFromStorage,
+  loadCategoriesFromStorage,
+  loadSubCategoriesFromStorage,
 } = categorySlice.actions;
 
 export default categorySlice.reducer;
