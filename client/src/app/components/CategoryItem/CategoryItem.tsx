@@ -33,7 +33,7 @@ const CategoryItem: React.FC<CategoryItemProps> = ({
   currentCategoryId,
   setCurrentCategoryId,
 }) => {
-  const [subCategoryVersion, setSubCategoryVersion] = useState<number>(1.1);
+  const [subCategoryVersion, setSubCategoryVersion] = useState<number>(1);
   const [openSubCategories, setOpenSubCategories] = useState<OpenCategories>(
     {}
   );
@@ -52,7 +52,7 @@ const CategoryItem: React.FC<CategoryItemProps> = ({
 
   const addSubCategoryItem = () => {
     const newSubCategory = {
-      name: `${category.name} ${subCategoryVersion.toFixed(1)}`,
+      name: `${category.name} ${subCategoryVersion.toFixed(0)}`,
       id: `${category.id}-sub-${uuidv4()}`,
       parentId: category.id,
       openCategories: true,
@@ -66,7 +66,7 @@ const CategoryItem: React.FC<CategoryItemProps> = ({
         subStorageKey: `subCategories-${category.id}`,
       })
     );
-    setSubCategoryVersion(subCategoryVersion + 0.1);
+    setSubCategoryVersion(subCategoryVersion + 1);
     openCategories[category.id] = true;
   };
 
@@ -121,7 +121,11 @@ const CategoryItem: React.FC<CategoryItemProps> = ({
 
   return (
     <div>
-      <div className={styles.categoryContainer}>
+      <div
+        className={`${styles.categoryContainer} ${
+          category.id === currentCategoryId ? styles.selectedCategory : ""
+        }`}
+      >
         <div>
           <span onClick={() => handleToggle(category.id)}>
             {openCategories[category.id] ? "⯆" : "⯈"}
