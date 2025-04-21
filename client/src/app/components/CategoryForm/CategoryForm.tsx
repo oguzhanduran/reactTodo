@@ -10,6 +10,7 @@ import {
   loadCategoriesFromStorage,
 } from "@/store/slices/categorySlice";
 import { Category, OpenCategories } from "@/types/categoryTypes";
+import ProgressBar from "../ProgressBar/ProgressBar";
 
 const CategoryForm = () => {
   const [categoryInput, setCategoryInput] = useState("");
@@ -17,6 +18,11 @@ const CategoryForm = () => {
   const [currentCategoryId, setCurrentCategoryId] = useState<null | string>(
     null
   );
+  const currentCategory = useSelector((state: RootState) =>
+    state.category.categories.find((cat) => cat.id === currentCategoryId)
+  );
+
+  const progress = useSelector((state: RootState) => state.category.progress);
   const categories = useSelector(
     (state: RootState) => state.category.categories
   ) as Category[];
@@ -71,6 +77,7 @@ const CategoryForm = () => {
 
   return (
     <div className={styles.container}>
+      <ProgressBar progress={progress} label={currentCategory?.name} />
       <div className={styles.formSide}>
         <input
           placeholder="Enter category title"

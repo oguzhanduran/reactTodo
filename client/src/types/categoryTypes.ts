@@ -31,6 +31,7 @@ export type CategoryState = {
   categories: Category[];
   subCategories: SubCategory[];
   todos: Todo[];
+  progress: number;
 };
 
 export type OpenCategories = {

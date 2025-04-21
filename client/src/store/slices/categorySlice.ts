@@ -11,6 +11,7 @@ const initialState: CategoryState = {
   categories: [],
   subCategories: [],
   todos: [],
+  progress: 100,
 };
 
 export const categorySlice = createSlice({
@@ -50,6 +51,9 @@ export const categorySlice = createSlice({
         state.subCategories = storedSubCategories;
       }
     },
+    setProgress: (state, action) => {
+      state.progress = action.payload;
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(fetchTodosAsync.fulfilled, (state, action) => {
@@ -71,6 +75,7 @@ export const {
   setSubCategories,
   loadCategoriesFromStorage,
   loadSubCategoriesFromStorage,
+  setProgress,
 } = categorySlice.actions;
 
 export default categorySlice.reducer;

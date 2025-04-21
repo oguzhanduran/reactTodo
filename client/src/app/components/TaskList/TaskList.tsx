@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FaRegEdit } from "react-icons/fa";
 import styles from "./TaskList.module.css";
 import { useDispatch, useSelector } from "react-redux";
@@ -6,6 +6,7 @@ import { v4 as uuidv4 } from "uuid";
 import { AppDispatch, RootState } from "@/store/store";
 import { Todo } from "@/types/categoryTypes";
 import { setTodosAsync, updateTodosAsync } from "@/store/services";
+import { setProgress } from "@/store/slices/categorySlice";
 
 type TaskListProp = {
   currentCategoryId: string;
@@ -17,6 +18,20 @@ const TaskList: React.FC<TaskListProp> = ({ currentCategoryId }) => {
   const [showDone, setShowDone] = useState<boolean>(false);
   const dispatch = useDispatch<AppDispatch>();
   const todos = useSelector((state: RootState) => state.category.todos);
+
+  useEffect(() => {
+    const calculateProgress = (todos: Todo[]) => {
+      const totalTasks = todos.length;
+      const completedTasks = todos.filter((todo) => todo.completed).length;
+
+      if (totalTasks === 0) return 100;
+
+      return Math.floor((completedTasks / totalTasks) * 100);
+    };
+
+    const progress = calculateProgress(todos);
+    dispatch(setProgress(progress));
+  }, [todos]);
 
   const handleChangeTextInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     setTextInputValue(e.target.value);
