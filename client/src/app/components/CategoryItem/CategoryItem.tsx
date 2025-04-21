@@ -17,7 +17,7 @@ import { fetchTodosAsync } from "@/store/services";
 type CategoryItemProps = {
   category: Category;
   onDelete: () => void;
-  onUpdate: () => void;
+  onUpdate: (newName: string) => void;
   onToggle: () => void;
   openCategories: OpenCategories;
   currentCategoryId: string | null;
@@ -37,6 +37,8 @@ const CategoryItem: React.FC<CategoryItemProps> = ({
   const [openSubCategories, setOpenSubCategories] = useState<OpenCategories>(
     {}
   );
+  const [isEditing, setIsEditing] = useState(false);
+  const [newName, setNewName] = useState(category.name);
   const subCategories = useSelector(
     (state: RootState) => state.category.subCategories
   ) as SubCategory[];
@@ -48,6 +50,17 @@ const CategoryItem: React.FC<CategoryItemProps> = ({
       const subCategoryId = `subCategories-${category.id}`;
       dispatch(loadSubCategoriesFromStorage({ subCategoryId: subCategoryId }));
     }
+  };
+
+  const handleSave = () => {
+    if (newName.trim() === "") return;
+    onUpdate(newName);
+    setIsEditing(false);
+  };
+
+  const handleCancel = () => {
+    setNewName(category.name);
+    setIsEditing(false);
   };
 
   const addSubCategoryItem = () => {
@@ -71,6 +84,11 @@ const CategoryItem: React.FC<CategoryItemProps> = ({
   };
 
   const deleteSubCategoryItem = (id: string) => {
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this subcategory?"
+    );
+    if (!confirmDelete) return;
+
     const updatedCategories = subCategories.filter(
       (subCategoryItem) => subCategoryItem.id !== id
     );
@@ -81,19 +99,7 @@ const CategoryItem: React.FC<CategoryItemProps> = ({
     dispatch(setSubCategories(categoryObject));
   };
 
-  const askForNewName = (oldName: string): string | null => {
-    const input = prompt("Enter the new subCategory name", oldName);
-    if (!input || input.trim() === "") return null;
-    return input.trim();
-  };
-
-  const updateSubCategoryItem = (id: string) => {
-    const subCategory = subCategories.find((item) => item.id === id);
-    if (!subCategory) return;
-
-    const newName = askForNewName(subCategory.name);
-    if (!newName) return;
-
+  const updateSubCategoryItem = (id: string, newName: string) => {
     const updated = subCategories.map((item) =>
       item.id === id ? { ...item, name: newName } : item
     );
@@ -130,13 +136,30 @@ const CategoryItem: React.FC<CategoryItemProps> = ({
           <span onClick={() => handleToggle(category.id)}>
             {openCategories[category.id] ? "⯆" : "⯈"}
           </span>
-          <span onClick={openTaskList}>{category.name}</span>
-          <FaRegEdit onClick={onUpdate} />
+          {!isEditing && <span onClick={openTaskList}>{category.name}</span>}
+
+          {isEditing ? (
+            <>
+              <input
+                type="text"
+                value={newName}
+                onChange={(e) => setNewName(e.target.value)}
+              />
+              <button onClick={handleSave}>Save</button>
+              <button onClick={handleCancel}>Cancel</button>
+            </>
+          ) : (
+            <>
+              <FaRegEdit onClick={() => setIsEditing(true)} />
+            </>
+          )}
         </div>
-        <div className={styles.iconContainer}>
-          <FaRegTrashAlt onClick={onDelete} />
-          <FaRegPlusSquare onClick={() => addSubCategoryItem()} />
-        </div>
+        {!isEditing && (
+          <div className={styles.iconContainer}>
+            <FaRegTrashAlt onClick={onDelete} />
+            <FaRegPlusSquare onClick={() => addSubCategoryItem()} />
+          </div>
+        )}
       </div>
       {category.id === currentCategoryId && (
         <TaskList currentCategoryId={currentCategoryId} />
@@ -150,7 +173,9 @@ const CategoryItem: React.FC<CategoryItemProps> = ({
                 <CategoryItem
                   category={subCategory}
                   onDelete={() => deleteSubCategoryItem(subCategory.id)}
-                  onUpdate={() => updateSubCategoryItem(subCategory.id)}
+                  onUpdate={(newName) =>
+                    updateSubCategoryItem(subCategory.id, newName)
+                  }
                   onToggle={() => toggleSubCategory(subCategory.id)}
                   openCategories={openSubCategories}
                   setCurrentCategoryId={setCurrentCategoryId}

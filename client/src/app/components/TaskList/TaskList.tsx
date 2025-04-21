@@ -29,8 +29,8 @@ const TaskList: React.FC<TaskListProp> = ({ currentCategoryId }) => {
   const addTodo = () => {
     if (textInputValue.trim() !== "") {
       const updatedTodos = [
-        ...(todos ?? []),
         { name: textInputValue, id: uuidv4(), completed: false },
+        ...(todos ?? []),
       ];
       dispatch(
         setTodosAsync({

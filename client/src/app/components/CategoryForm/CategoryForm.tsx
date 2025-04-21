@@ -40,35 +40,27 @@ const CategoryForm = () => {
       openCategories: false,
     };
 
-    const updated = [...categories, newCategory];
+    const updated = [newCategory, ...categories];
     dispatch(setCategories(updated));
     setCategoryInput("");
   };
 
   const deleteCategoryItem = (id: string) => {
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this category?"
+    );
+    if (!confirmDelete) return;
+
     const updatedCategories = categories.filter(
       (category) => category.id !== id
     );
     dispatch(setCategories(updatedCategories));
   };
 
-  const askForNewName = (oldName: string): string | null => {
-    const input = prompt("Enter the new category name", oldName);
-    if (!input || input.trim() === "") return null;
-    return input.trim();
-  };
-
-  const updateCategoryItem = (id: string) => {
-    const categoryToUpdate = categories.find((cat) => cat.id === id);
-    if (!categoryToUpdate) return;
-
-    const newName = askForNewName(categoryToUpdate.name);
-    if (!newName) return;
-
+  const updateCategoryItem = (id: string, newName: string) => {
     const updated = categories.map((cat) =>
       cat.id === id ? { ...cat, name: newName } : cat
     );
-
     dispatch(setCategories(updated));
   };
 
@@ -93,7 +85,7 @@ const CategoryForm = () => {
           key={categoryItem.id}
           category={categoryItem}
           onDelete={() => deleteCategoryItem(categoryItem.id)}
-          onUpdate={() => updateCategoryItem(categoryItem.id)}
+          onUpdate={(newName) => updateCategoryItem(categoryItem.id, newName)}
           onToggle={() => toggleCategoryItem(categoryItem.id)}
           openCategories={openCategories}
           currentCategoryId={currentCategoryId}
