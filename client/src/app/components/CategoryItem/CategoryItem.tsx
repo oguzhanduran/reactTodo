@@ -1,8 +1,13 @@
 import React, { useState } from "react";
 import TaskList from "../TaskList/TaskList";
-import { FaRegTrashAlt, FaRegEdit, FaRegPlusSquare } from "react-icons/fa";
+import {
+  FaRegTrashAlt,
+  FaRegEdit,
+  FaRegPlusSquare,
+  FaReply,
+} from "react-icons/fa";
 import styles from "./CategoryItem.module.css";
-import { Category, SubCategory } from "@/types/categoryTypes";
+import { Category } from "@/types/categoryTypes";
 import { OpenCategories } from "@/types/categoryTypes";
 import { useSelector, useDispatch } from "react-redux";
 import { AppDispatch, RootState } from "@/store/store";
@@ -10,6 +15,7 @@ import { v4 as uuidv4 } from "uuid";
 import {
   setSubCategories,
   loadSubCategoriesFromStorage,
+  setIsEditingTodo,
 } from "@/store/slices/categorySlice";
 
 import { fetchTodosAsync } from "@/store/services";
@@ -41,9 +47,10 @@ const CategoryItem: React.FC<CategoryItemProps> = ({
   const [newName, setNewName] = useState<string>(category.name);
   const [isSubCategoryModalOpen, setIsSubCategoryModalOpen] = useState(false);
 
-  const subCategories = useSelector(
-    (state: RootState) => state.category.subCategories
-  ) as SubCategory[];
+  const { subCategories, isEditingTodo } = useSelector(
+    (state: RootState) => state.category
+  );
+
   const dispatch = useDispatch<AppDispatch>();
 
   const openSubCategoryModal = () => {
@@ -58,7 +65,7 @@ const CategoryItem: React.FC<CategoryItemProps> = ({
       openCategories: true,
     };
 
-    const updatedSubCategories = [...subCategories, newSubCategory];
+    const updatedSubCategories = [newSubCategory, ...subCategories];
 
     dispatch(
       setSubCategories({
@@ -104,6 +111,7 @@ const CategoryItem: React.FC<CategoryItemProps> = ({
       subStorageKey: `subCategories-${category.id}`,
     };
     dispatch(setSubCategories(categoryObject));
+    openTaskList();
   };
 
   const updateSubCategoryItem = (id: string, newName: string) => {
@@ -132,6 +140,11 @@ const CategoryItem: React.FC<CategoryItemProps> = ({
     dispatch(fetchTodosAsync(storageKey));
   };
 
+  const handleEditing = () => {
+    dispatch(setIsEditingTodo(false));
+    openTaskList();
+  };
+
   return (
     <div>
       <div
@@ -140,10 +153,14 @@ const CategoryItem: React.FC<CategoryItemProps> = ({
         }`}
       >
         <div>
-          <span onClick={() => handleToggle(category.id)}>
-            {openCategories[category.id] ? "⯆" : "⯈"}
-          </span>
-          {!isEditing && <span onClick={openTaskList}>{category.name}</span>}
+          {!isEditing && (
+            <>
+              <span onClick={() => handleToggle(category.id)}>
+                {openCategories[category.id] ? "⯆" : "⯈"}
+              </span>
+              <span onClick={openTaskList}>{category.name}</span>
+            </>
+          )}
 
           {isEditing ? (
             <>
@@ -157,16 +174,19 @@ const CategoryItem: React.FC<CategoryItemProps> = ({
             </>
           ) : (
             <>
-              <FaRegEdit onClick={() => setIsEditing(true)} />
+              {!isEditingTodo && (
+                <FaRegEdit onClick={() => setIsEditing(true)} />
+              )}
             </>
           )}
         </div>
-        {!isEditing && (
+        {!(isEditing || isEditingTodo) && (
           <div className={styles.iconContainer}>
             <FaRegTrashAlt onClick={onDelete} />
             <FaRegPlusSquare onClick={openSubCategoryModal} />
           </div>
         )}
+        {isEditingTodo && <FaReply onClick={handleEditing} />}
       </div>
       {category.id === currentCategoryId && (
         <TaskList currentCategoryId={currentCategoryId} />

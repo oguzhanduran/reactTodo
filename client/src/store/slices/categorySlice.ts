@@ -15,6 +15,7 @@ const initialState: CategoryState = {
     progress: 0,
     currentSubCategoryName: "",
   },
+  isEditingTodo: false,
 };
 
 export const categorySlice = createSlice({
@@ -57,6 +58,9 @@ export const categorySlice = createSlice({
     setProgress: (state, action) => {
       state.progressInfo = action.payload;
     },
+    setIsEditingTodo: (state, action) => {
+      state.isEditingTodo = action.payload;
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(fetchTodosAsync.fulfilled, (state, action) => {
@@ -79,6 +83,7 @@ export const {
   loadCategoriesFromStorage,
   loadSubCategoriesFromStorage,
   setProgress,
+  setIsEditingTodo,
 } = categorySlice.actions;
 
 export default categorySlice.reducer;

@@ -8,6 +8,7 @@ import { SubCategory, Todo } from "@/types/categoryTypes";
 import { setTodosAsync, updateTodosAsync } from "@/store/services";
 import { setProgress } from "@/store/slices/categorySlice";
 import EditTodoForm from "../EditTodoForm/EditTodoForm";
+import { setIsEditingTodo } from "@/store/slices/categorySlice";
 
 type TaskListProp = {
   currentCategoryId: string;
@@ -42,7 +43,6 @@ const TaskList: React.FC<TaskListProp> = ({ currentCategoryId }) => {
     const progress = calculateProgress(todos);
     const progressInfo = { progress, currentSubCategoryName };
     dispatch(setProgress(progressInfo));
-    console.log("currentSubCategoryName", currentSubCategoryName);
   }, [todos, subCategories, dispatch, currentCategoryId]);
 
   const handleChangeTextInput = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -96,10 +96,12 @@ const TaskList: React.FC<TaskListProp> = ({ currentCategoryId }) => {
   const clearInput = () => setSearchInputValue("");
 
   const startEditing = (todo: Todo) => {
+    dispatch(setIsEditingTodo(true));
     setEditTodoId(todo.id);
   };
 
   const cancelEditing = () => {
+    dispatch(setIsEditingTodo(false));
     setEditTodoId(null);
     setShowDone(false);
   };

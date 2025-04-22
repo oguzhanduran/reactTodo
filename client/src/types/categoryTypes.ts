@@ -38,6 +38,7 @@ export type CategoryState = {
   subCategories: SubCategory[];
   todos: Todo[];
   progressInfo: ProgressInfo;
+  isEditingTodo: boolean;
 };
 
 export type OpenCategories = {
