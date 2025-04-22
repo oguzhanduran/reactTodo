@@ -22,7 +22,9 @@ const CategoryForm = () => {
     state.category.categories.find((cat) => cat.id === currentCategoryId)
   );
 
-  const progress = useSelector((state: RootState) => state.category.progress);
+  const progressInfo = useSelector(
+    (state: RootState) => state.category.progressInfo
+  );
   const categories = useSelector(
     (state: RootState) => state.category.categories
   ) as Category[];
@@ -77,7 +79,10 @@ const CategoryForm = () => {
 
   return (
     <div className={styles.container}>
-      <ProgressBar progress={progress} label={currentCategory?.name} />
+      <ProgressBar
+        progress={progressInfo.progress}
+        label={currentCategory?.name || progressInfo.currentSubCategoryName}
+      />
       <div className={styles.formSide}>
         <input
           placeholder="Enter category title"

@@ -11,7 +11,10 @@ const initialState: CategoryState = {
   categories: [],
   subCategories: [],
   todos: [],
-  progress: 100,
+  progressInfo: {
+    progress: 0,
+    currentSubCategoryName: "",
+  },
 };
 
 export const categorySlice = createSlice({
@@ -52,7 +55,7 @@ export const categorySlice = createSlice({
       }
     },
     setProgress: (state, action) => {
-      state.progress = action.payload;
+      state.progressInfo = action.payload;
     },
   },
   extraReducers: (builder) => {

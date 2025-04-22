@@ -4,9 +4,10 @@ import styles from "./TaskList.module.css";
 import { useDispatch, useSelector } from "react-redux";
 import { v4 as uuidv4 } from "uuid";
 import { AppDispatch, RootState } from "@/store/store";
-import { Todo } from "@/types/categoryTypes";
+import { SubCategory, Todo } from "@/types/categoryTypes";
 import { setTodosAsync, updateTodosAsync } from "@/store/services";
 import { setProgress } from "@/store/slices/categorySlice";
+import EditTodoForm from "../EditTodoForm/EditTodoForm";
 
 type TaskListProp = {
   currentCategoryId: string;
@@ -18,8 +19,17 @@ const TaskList: React.FC<TaskListProp> = ({ currentCategoryId }) => {
   const [showDone, setShowDone] = useState<boolean>(false);
   const dispatch = useDispatch<AppDispatch>();
   const todos = useSelector((state: RootState) => state.category.todos);
+  const [editTodoId, setEditTodoId] = useState<string | null>(null);
+
+  const subCategories = useSelector(
+    (state: RootState) => state.category.subCategories
+  ) as SubCategory[];
 
   useEffect(() => {
+    const currentSubCategoryName = subCategories.find(
+      (sub) => sub.id === currentCategoryId
+    )?.name;
+
     const calculateProgress = (todos: Todo[]) => {
       const totalTasks = todos.length;
       const completedTasks = todos.filter((todo) => todo.completed).length;
@@ -30,8 +40,10 @@ const TaskList: React.FC<TaskListProp> = ({ currentCategoryId }) => {
     };
 
     const progress = calculateProgress(todos);
-    dispatch(setProgress(progress));
-  }, [todos]);
+    const progressInfo = { progress, currentSubCategoryName };
+    dispatch(setProgress(progressInfo));
+    console.log("currentSubCategoryName", currentSubCategoryName);
+  }, [todos, subCategories, dispatch, currentCategoryId]);
 
   const handleChangeTextInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     setTextInputValue(e.target.value);
@@ -55,30 +67,6 @@ const TaskList: React.FC<TaskListProp> = ({ currentCategoryId }) => {
       );
     }
     setTextInputValue("");
-  };
-
-  const askForNewName = (oldName: string): string | null => {
-    const input = prompt("Enter the new todo name", oldName);
-    if (!input || input.trim() === "") return null;
-    return input.trim();
-  };
-
-  const updateTodoItem = (id: string) => {
-    const updatedTodoItem = todos.map((todoItem) => {
-      if (todoItem.id === id) {
-        const newName = askForNewName(todoItem.name);
-        if (!newName) return todoItem;
-        return { ...todoItem, name: newName };
-      }
-      return todoItem;
-    });
-
-    dispatch(
-      updateTodosAsync({
-        todos: updatedTodoItem,
-        storageKey: `todos_${currentCategoryId}`,
-      })
-    );
   };
 
   const toggleComplete = (id: string) => {
@@ -107,43 +95,79 @@ const TaskList: React.FC<TaskListProp> = ({ currentCategoryId }) => {
 
   const clearInput = () => setSearchInputValue("");
 
+  const startEditing = (todo: Todo) => {
+    setEditTodoId(todo.id);
+  };
+
+  const cancelEditing = () => {
+    setEditTodoId(null);
+    setShowDone(false);
+  };
+
+  const saveChanges = (updatedTodo: Todo) => {
+    const updatedTodos = todos.map((todo) =>
+      todo.id === updatedTodo.id ? updatedTodo : todo
+    );
+
+    dispatch(
+      updateTodosAsync({
+        todos: updatedTodos,
+        storageKey: `todos_${currentCategoryId}`,
+      })
+    );
+
+    cancelEditing();
+  };
+
   return (
     <div className={styles.taskListContainer}>
-      <input type="checkbox" onChange={() => setShowDone(!showDone)} />
-      <span>Show done</span>
-      <input
-        className={styles.searchInput}
-        type="text"
-        placeholder="Search"
-        value={searchInputValue}
-        onChange={handleChangeSearchInput}
-      />
-      <button onClick={clearInput} className={styles.clearInputButton}>
-        X
-      </button>
-      <input
-        type="text"
-        placeholder="Add todo"
-        value={textInputValue}
-        onChange={handleChangeTextInput}
-      />
-      <button onClick={addTodo}>Add</button>
-      {(searchInputValue
-        ? filterTodos(filterTodosShowDone(todos))
-        : filterTodosShowDone(todos)
-      ).map((todo) => (
-        <div className={styles.todoItemContainer} key={todo.id}>
-          <div className={styles.checkboxAndName}>
-            <input
-              type="checkbox"
-              checked={todo.completed}
-              onChange={() => toggleComplete(todo.id)}
-            />
-            <span>{todo.name}</span>
-          </div>
-          <FaRegEdit onClick={() => updateTodoItem(todo.id)} />
+      {editTodoId ? (
+        <EditTodoForm
+          todo={todos.find((t) => t.id === editTodoId)!}
+          onSave={saveChanges}
+          onCancel={cancelEditing}
+          todos={todos}
+          onToggleComplete={toggleComplete}
+        />
+      ) : (
+        <div>
+          <input type="checkbox" onChange={() => setShowDone(!showDone)} />
+          <span>Show done</span>
+          <input
+            className={styles.searchInput}
+            type="text"
+            placeholder="Search"
+            value={searchInputValue}
+            onChange={handleChangeSearchInput}
+          />
+          <button onClick={clearInput} className={styles.clearInputButton}>
+            X
+          </button>
+          <input
+            type="text"
+            placeholder="Add todo"
+            value={textInputValue}
+            onChange={handleChangeTextInput}
+          />
+          <button onClick={addTodo}>Add</button>
+          {(searchInputValue
+            ? filterTodos(filterTodosShowDone(todos))
+            : filterTodosShowDone(todos)
+          ).map((todo) => (
+            <div className={styles.todoItemContainer} key={todo.id}>
+              <div className={styles.checkboxAndName}>
+                <input
+                  type="checkbox"
+                  checked={todo.completed}
+                  onChange={() => toggleComplete(todo.id)}
+                />
+                <span>{todo.name}</span>
+              </div>
+              <FaRegEdit onClick={() => startEditing(todo)} />
+            </div>
+          ))}
         </div>
-      ))}
+      )}
     </div>
   );
 };

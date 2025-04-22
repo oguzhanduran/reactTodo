@@ -15,6 +15,7 @@ export type Todo = {
   name: string;
   id: string;
   completed: boolean;
+  description?: string;
 };
 
 export type SubCategoriesState = {
@@ -27,11 +28,16 @@ export type TodosState = {
   storageKey: string;
 };
 
+export type ProgressInfo = {
+  progress: number;
+  currentSubCategoryName?: string;
+};
+
 export type CategoryState = {
   categories: Category[];
   subCategories: SubCategory[];
   todos: Todo[];
-  progress: number;
+  progressInfo: ProgressInfo;
 };
 
 export type OpenCategories = {

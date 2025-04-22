@@ -1,0 +1,39 @@
+.editContainer {
+  display: block;
+  width: 500px;
+}
+
+.editContainer textarea {
+  padding: 12px;
+  border: 1px solid #ccc;
+  font-size: 1rem;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.editContainer input[type="text"]:focus,
+.editContainer textarea:focus {
+  border-color: black;
+  outline: none;
+}
+
+.editContainer textarea {
+  resize: vertical;
+  min-height: 200px;
+}
+
+.buttonGroup {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.buttonGroup button {
+  margin-top: 20px;
+  margin-bottom: 20px;
+  cursor: pointer;
+}
+
+.spaceBetweenElements {
+  margin-top: 20px;
+}
