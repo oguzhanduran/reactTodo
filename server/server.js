@@ -26,7 +26,7 @@ app.post("/api/todos", (req, res) => {
   const { storageKey, todos } = req.body;
   todosByCategory[storageKey] = todos;
 
-  return res.send(todos);
+  return res.json(todos);
 });
 
 app.patch("/api/todos", (req, res) => {
@@ -37,7 +37,7 @@ app.patch("/api/todos", (req, res) => {
   );
 
   todosByCategory[storageKey] = updatedTodos;
-  return res.send(updatedTodos);
+  return res.json(updatedTodos);
 });
 
 // To run application

@@ -8,26 +8,25 @@ import { RootState } from "@/store/store";
 import {
   setCategories,
   loadCategoriesFromStorage,
+  setProgress,
 } from "@/store/slices/categorySlice";
-import { Category, OpenCategories } from "@/types/categoryTypes";
+import { Category, OpenCategories, ProgressInfo } from "@/types/categoryTypes";
 import ProgressBar from "../ProgressBar/ProgressBar";
 
 const CategoryForm = () => {
-  const [categoryInput, setCategoryInput] = useState("");
+  const [categoryInput, setCategoryInput] = useState<string>("");
   const [openCategories, setOpenCategories] = useState<OpenCategories>({});
   const [currentCategoryId, setCurrentCategoryId] = useState<null | string>(
     null
   );
+
   const currentCategory = useSelector((state: RootState) =>
     state.category.categories.find((cat) => cat.id === currentCategoryId)
   );
 
-  const progressInfo = useSelector(
-    (state: RootState) => state.category.progressInfo
-  );
-  const categories = useSelector(
-    (state: RootState) => state.category.categories
-  ) as Category[];
+  const { progressInfo, categories } = useSelector(
+    (state: RootState) => state.category
+  ) as { progressInfo: ProgressInfo; categories: Category[] };
 
   const dispatch = useDispatch();
 
@@ -63,6 +62,7 @@ const CategoryForm = () => {
       (category) => category.id !== id
     );
     dispatch(setCategories(updatedCategories));
+    dispatch(setProgress({ progress: 100, currentSubCategoryName: "" }));
   };
 
   const updateCategoryItem = (id: string, newName: string) => {

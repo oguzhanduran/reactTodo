@@ -9,6 +9,7 @@ import { setTodosAsync, updateTodosAsync } from "@/store/services";
 import { setProgress } from "@/store/slices/categorySlice";
 import EditTodoForm from "../EditTodoForm/EditTodoForm";
 import { setIsEditingTodo } from "@/store/slices/categorySlice";
+import { useRouter } from "next/navigation";
 
 type TaskListProp = {
   currentCategoryId: string;
@@ -21,16 +22,22 @@ const TaskList: React.FC<TaskListProp> = ({ currentCategoryId }) => {
   const dispatch = useDispatch<AppDispatch>();
   const todos = useSelector((state: RootState) => state.category.todos);
   const [editTodoId, setEditTodoId] = useState<string | null>(null);
+  const router = useRouter();
+  const searchParams = new URLSearchParams(window.location.search);
+
+  const currentCategory = useSelector((state: RootState) =>
+    state.category.categories.find((cat) => cat.id === currentCategoryId)
+  );
 
   const subCategories = useSelector(
     (state: RootState) => state.category.subCategories
   ) as SubCategory[];
 
-  useEffect(() => {
-    const currentSubCategoryName = subCategories.find(
-      (sub) => sub.id === currentCategoryId
-    )?.name;
+  const currentSubCategoryName = subCategories.find(
+    (sub) => sub.id === currentCategoryId
+  )?.name;
 
+  useEffect(() => {
     const calculateProgress = (todos: Todo[]) => {
       const totalTasks = todos.length;
       const completedTasks = todos.filter((todo) => todo.completed).length;
@@ -44,6 +51,25 @@ const TaskList: React.FC<TaskListProp> = ({ currentCategoryId }) => {
     const progressInfo = { progress, currentSubCategoryName };
     dispatch(setProgress(progressInfo));
   }, [todos, subCategories, dispatch, currentCategoryId]);
+
+  useEffect(() => {
+    const currentTodo = todos.find((t) => t.id === editTodoId);
+
+    const params = new URLSearchParams(searchParams);
+
+    params.set(
+      "category",
+      currentCategory?.name || currentSubCategoryName || ""
+    );
+
+    searchInputValue
+      ? params.set("filter", searchInputValue)
+      : params.delete("filter");
+
+    currentTodo ? params.set("todo", currentTodo.name) : params.delete("todo");
+
+    router.push(`?${params.toString()}`);
+  }, [currentCategoryId, searchInputValue, editTodoId]);
 
   const handleChangeTextInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     setTextInputValue(e.target.value);
@@ -128,8 +154,6 @@ const TaskList: React.FC<TaskListProp> = ({ currentCategoryId }) => {
           todo={todos.find((t) => t.id === editTodoId)!}
           onSave={saveChanges}
           onCancel={cancelEditing}
-          todos={todos}
-          onToggleComplete={toggleComplete}
         />
       ) : (
         <div>

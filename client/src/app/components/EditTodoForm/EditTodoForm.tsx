@@ -6,16 +6,12 @@ interface EditTodoFormProps {
   todo: Todo;
   onSave: (updatedTodo: Todo) => void;
   onCancel: () => void;
-  todos: Todo[];
-  onToggleComplete: (id: string) => void;
 }
 
 const EditTodoForm: React.FC<EditTodoFormProps> = ({
   todo,
   onSave,
   onCancel,
-  todos,
-  onToggleComplete,
 }) => {
   const [name, setName] = useState<string>(todo.name);
   const [description, setDescription] = useState<string>(

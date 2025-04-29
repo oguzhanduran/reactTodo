@@ -40,12 +40,13 @@ const CategoryItem: React.FC<CategoryItemProps> = ({
   currentCategoryId,
   setCurrentCategoryId,
 }) => {
+  const [isEditing, setIsEditing] = useState<boolean>(false);
+  const [newName, setNewName] = useState<string>(category.name);
+  const [isSubCategoryModalOpen, setIsSubCategoryModalOpen] =
+    useState<boolean>(false);
   const [openSubCategories, setOpenSubCategories] = useState<OpenCategories>(
     {}
   );
-  const [isEditing, setIsEditing] = useState<boolean>(false);
-  const [newName, setNewName] = useState<string>(category.name);
-  const [isSubCategoryModalOpen, setIsSubCategoryModalOpen] = useState(false);
 
   const { subCategories, isEditingTodo } = useSelector(
     (state: RootState) => state.category

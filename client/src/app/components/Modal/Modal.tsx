@@ -41,7 +41,7 @@ const Modal: React.FC<ModalProps> = ({
           onChange={(e) => setInputValue(e.target.value)}
         />
         <div className={styles.buttonGroup}>
-          <button onClick={handleSave}>Save</button>
+          <button onClick={handleSave}>Add</button>
           <button onClick={onClose}>Cancel</button>
         </div>
       </div>
