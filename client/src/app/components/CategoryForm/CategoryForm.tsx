@@ -4,14 +4,14 @@ import CategoryItem from "../CategoryItem/CategoryItem";
 import styles from "./CategoryForm.module.css";
 import { v4 as uuidv4 } from "uuid";
 import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "@/store/store";
-import {
-  setCategories,
-  loadCategoriesFromStorage,
-  setProgress,
-} from "@/store/slices/categorySlice";
+import { AppDispatch, RootState } from "@/store/store";
+import { setProgress } from "@/store/slices/categorySlice";
 import { Category, OpenCategories, ProgressInfo } from "@/types/categoryTypes";
 import ProgressBar from "../ProgressBar/ProgressBar";
+import {
+  saveCategoriesToStorage,
+  loadCategoriesFromStorageAsync,
+} from "@/store/services";
 
 const CategoryForm = () => {
   const [categoryInput, setCategoryInput] = useState<string>("");
@@ -28,10 +28,10 @@ const CategoryForm = () => {
     (state: RootState) => state.category
   ) as { progressInfo: ProgressInfo; categories: Category[] };
 
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
 
   useEffect(() => {
-    dispatch(loadCategoriesFromStorage());
+    dispatch(loadCategoriesFromStorageAsync());
   }, [dispatch]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -48,7 +48,7 @@ const CategoryForm = () => {
     };
 
     const updated = [newCategory, ...categories];
-    dispatch(setCategories(updated));
+    dispatch(saveCategoriesToStorage(updated));
     setCategoryInput("");
   };
 
@@ -61,7 +61,7 @@ const CategoryForm = () => {
     const updatedCategories = categories.filter(
       (category) => category.id !== id
     );
-    dispatch(setCategories(updatedCategories));
+    dispatch(saveCategoriesToStorage(updatedCategories));
     dispatch(setProgress({ progress: 100, currentSubCategoryName: "" }));
   };
 
@@ -69,7 +69,7 @@ const CategoryForm = () => {
     const updated = categories.map((cat) =>
       cat.id === id ? { ...cat, name: newName } : cat
     );
-    dispatch(setCategories(updated));
+    dispatch(saveCategoriesToStorage(updated));
   };
 
   const toggleCategoryItem = (id: string) => {

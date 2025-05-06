@@ -12,14 +12,13 @@ import { OpenCategories } from "@/types/categoryTypes";
 import { useSelector, useDispatch } from "react-redux";
 import { AppDispatch, RootState } from "@/store/store";
 import { v4 as uuidv4 } from "uuid";
-import {
-  setSubCategories,
-  loadSubCategoriesFromStorage,
-  setIsEditingTodo,
-} from "@/store/slices/categorySlice";
-
-import { fetchTodosAsync } from "@/store/services";
+import { setIsEditingTodo } from "@/store/slices/categorySlice";
 import Modal from "../Modal/Modal";
+import {
+  saveSubCategoriesToStorage,
+  loadSubCategoriesFromStorageAsync,
+  fetchTodosAsync,
+} from "@/store/services";
 
 type CategoryItemProps = {
   category: Category;
@@ -69,7 +68,7 @@ const CategoryItem: React.FC<CategoryItemProps> = ({
     const updatedSubCategories = [newSubCategory, ...subCategories];
 
     dispatch(
-      setSubCategories({
+      saveSubCategoriesToStorage({
         subCategories: updatedSubCategories,
         subStorageKey: `subCategories-${category.id}`,
       })
@@ -83,7 +82,9 @@ const CategoryItem: React.FC<CategoryItemProps> = ({
     onToggle();
     if (!openCategories[categoryId]) {
       const subCategoryId = `subCategories-${category.id}`;
-      dispatch(loadSubCategoriesFromStorage({ subCategoryId: subCategoryId }));
+      dispatch(
+        loadSubCategoriesFromStorageAsync({ subCategoryId: subCategoryId })
+      );
     }
   };
 
@@ -111,7 +112,7 @@ const CategoryItem: React.FC<CategoryItemProps> = ({
       subCategories: updatedCategories,
       subStorageKey: `subCategories-${category.id}`,
     };
-    dispatch(setSubCategories(categoryObject));
+    dispatch(saveSubCategoriesToStorage(categoryObject));
     openTaskList();
   };
 
@@ -121,7 +122,7 @@ const CategoryItem: React.FC<CategoryItemProps> = ({
     );
 
     dispatch(
-      setSubCategories({
+      saveSubCategoriesToStorage({
         subCategories: updated,
         subStorageKey: `subCategories-${category.id}`,
       })
