@@ -1,4 +1,4 @@
-const Joi = require("joi");
+import Joi from "joi";
 
 const todoItemSchema = Joi.object({
   id: Joi.string().required(),
@@ -7,11 +7,7 @@ const todoItemSchema = Joi.object({
   description: Joi.string().allow("").optional(),
 });
 
-const todoSchema = Joi.object({
+export const todoSchema = Joi.object({
   storageKey: Joi.string().required(),
   todos: Joi.array().items(todoItemSchema).required(),
 });
-
-module.exports = {
-  todoSchema,
-};

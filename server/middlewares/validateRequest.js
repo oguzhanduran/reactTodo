@@ -8,7 +8,7 @@ function validateRequest(schema) {
   };
 }
 
-module.exports = validateRequest;
+export default validateRequest;
 // If the request body does not match the schema, it returns 400 Bad Request;
 // If schema validation passes, the next middleware/controller is executed
 // for example: router.post("/", validateRequest(schema), middleware1, controller); if there is this kind of structure it will pass the middleware1 but right now there is only 1 middleware so it will directly go controller

@@ -1,6 +1,6 @@
-const todoService = require("../services/todoService");
+import todoService from "../services/todoService.js";
 
-exports.getTodos = async (req, res) => {
+const getTodos = async (req, res) => {
   const { storageKey } = req.query;
   try {
     const todos = await todoService.getTodosByCategory(storageKey);
@@ -12,7 +12,7 @@ exports.getTodos = async (req, res) => {
   }
 };
 
-exports.addTodos = async (req, res) => {
+const addTodos = async (req, res) => {
   const { storageKey, todos } = req.body;
   try {
     const updatedTodos = await todoService.addTodos(storageKey, todos);
@@ -24,7 +24,7 @@ exports.addTodos = async (req, res) => {
   }
 };
 
-exports.updateTodos = async (req, res) => {
+const updateTodos = async (req, res) => {
   const { storageKey, todos } = req.body;
   try {
     const updatedTodos = await todoService.updateTodos(storageKey, todos);
@@ -34,6 +34,12 @@ exports.updateTodos = async (req, res) => {
       .status(500)
       .json({ message: "An unexpected error occurred on the server" });
   }
+};
+
+export default {
+  updateTodos,
+  addTodos,
+  getTodos,
 };
 
 // Controller Layer: It is the bridge between the Presentation Layer (routes) and the Business Logic Layer (services).

@@ -1,33 +1,33 @@
-const todoRepository = require("../repositories/todoRepository");
+import todoRepository from "../repositories/todoRepository.js";
 
-async function getTodosByCategory(storageKey) {
+const getTodosByCategory = async (storageKey) => {
   try {
     return await todoRepository.fetchTodosByCategory(storageKey);
   } catch (error) {
     throw new Error("An error occurred while retrieving todo data");
   }
-}
+};
 
-async function addTodos(storageKey, todos) {
+const addTodos = async (storageKey, todos) => {
   try {
     return await todoRepository.addTodos(storageKey, todos);
   } catch (error) {
     throw new Error("An error occurred while adding todo data");
   }
-}
+};
 
-async function updateTodos(storageKey, todos) {
+const updateTodos = async (storageKey, todos) => {
   try {
     return await todoRepository.updateTodos(storageKey, todos);
   } catch (error) {
     throw new Error("An error occurred while updating todo data");
   }
-}
+};
 
-module.exports = {
-  getTodosByCategory,
-  addTodos,
+export default {
   updateTodos,
+  addTodos,
+  getTodosByCategory,
 };
 
 // Sevice Layer (Business Logic Layer) It is the bridge between the Controller and the Repository (Data Access).

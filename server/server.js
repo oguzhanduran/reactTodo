@@ -1,9 +1,9 @@
-const express = require("express");
-const cors = require("cors");
+import express from "express";
+import cors from "cors";
+import todoRoutes from "./routes/todoRoutes.js";
+
 const app = express();
 const PORT = 8080;
-
-const todoRoutes = require("./routes/todoRoutes"); // Routes are managed here
 
 app.use(cors());
 app.use(express.json());
