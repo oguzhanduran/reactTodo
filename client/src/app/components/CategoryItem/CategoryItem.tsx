@@ -18,7 +18,7 @@ import {
   saveSubCategoriesToStorage,
   loadSubCategoriesFromStorageAsync,
   fetchTodosAsync,
-} from "@/store/services";
+} from "@/services/todoService";
 
 type CategoryItemProps = {
   category: Category;

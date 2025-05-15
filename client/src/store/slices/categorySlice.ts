@@ -11,7 +11,7 @@ import {
   updateTodosAsync,
   loadSubCategoriesFromStorageAsync,
   loadCategoriesFromStorageAsync,
-} from "../services";
+} from "../../services/todoService";
 
 const initialState: CategoryState = {
   categories: [],

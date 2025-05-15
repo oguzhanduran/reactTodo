@@ -11,7 +11,7 @@ import ProgressBar from "../ProgressBar/ProgressBar";
 import {
   saveCategoriesToStorage,
   loadCategoriesFromStorageAsync,
-} from "@/store/services";
+} from "@/services/todoService";
 
 const CategoryForm = () => {
   const [categoryInput, setCategoryInput] = useState<string>("");

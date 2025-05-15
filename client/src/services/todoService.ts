@@ -1,11 +1,11 @@
 import {
   Category,
   SubCategoriesState,
-  TodoParams,
+  Todo,
 } from "@/types/categoryTypes";
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import axios from "axios";
-import { setCategories, setSubCategories } from "./slices/categorySlice";
+import { setCategories, setSubCategories } from "@/store/slices/categorySlice";
+import { fetchers } from "./fetchers";
 
 export const saveCategoriesToStorage = createAsyncThunk(
   "category/saveCategoriesToStorage",
@@ -46,36 +46,28 @@ export const loadSubCategoriesFromStorageAsync = createAsyncThunk(
 );
 
 export const fetchTodosAsync = createAsyncThunk(
-  "todos/fetchTodosAsync",
+  "todos/fetchTodos",
   async (storageKey: string) => {
-    const response = await axios.get(
-      `${process.env.NEXT_PUBLIC_API_BASE_ENDPOINT}/api/todos?storageKey=${storageKey}`
-    );
-    return response.data;
+    return await fetchers.todos.fetch({
+      queryParams: { storageKey },
+    });
   }
 );
 
 export const setTodosAsync = createAsyncThunk(
-  "todos/setTodosAsync",
-  async ({ todos, storageKey }: TodoParams) => {
-    await axios.post(`${process.env.NEXT_PUBLIC_API_BASE_ENDPOINT}/api/todos`, {
-      todos,
-      storageKey,
+  "todos/setTodos",
+  async ({ todos, storageKey }: { todos: Todo[]; storageKey: string }) => {
+    return await fetchers.todos.set({
+      payload: { todos, storageKey },
     });
-    return todos;
   }
 );
 
 export const updateTodosAsync = createAsyncThunk(
-  "todos/updateTodosAsync",
-  async ({ todos, storageKey }: TodoParams) => {
-    await axios.patch(
-      `${process.env.NEXT_PUBLIC_API_BASE_ENDPOINT}/api/todos`,
-      {
-        todos,
-        storageKey,
-      }
-    );
-    return todos;
+  "todos/updateTodos",
+  async ({ todos, storageKey }: { todos: Todo[]; storageKey: string }) => {
+    return await fetchers.todos.update({
+      payload: { todos, storageKey },
+    });
   }
 );

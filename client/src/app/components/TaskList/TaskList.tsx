@@ -5,11 +5,11 @@ import { useDispatch, useSelector } from "react-redux";
 import { v4 as uuidv4 } from "uuid";
 import { AppDispatch, RootState } from "@/store/store";
 import { SubCategory, Todo } from "@/types/categoryTypes";
-import { setTodosAsync, updateTodosAsync } from "@/store/services";
 import { setProgress } from "@/store/slices/categorySlice";
 import EditTodoForm from "../EditTodoForm/EditTodoForm";
 import { setIsEditingTodo } from "@/store/slices/categorySlice";
 import { useRouter } from "next/navigation";
+import { setTodosAsync, updateTodosAsync } from "@/services/todoService";
 
 type TaskListProp = {
   currentCategoryId: string;
